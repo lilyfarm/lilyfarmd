@@ -1,0 +1,54 @@
+<!-- nearestN is the view to see the "nearest N" Farmers' Markets from a user's location -->
+
+<html>
+
+{{.HtmlHead}}
+
+<body>
+
+<div class="container">
+
+{{.HeadingAndMenu}}
+
+<h4 class="mb-3 mt-3 text-center">Nearby Farmers' Markets</h4>
+
+{{range .Records}}
+<h5 class="mt-3"> {{.Name}} </h5>
+
+<address>
+    {{.Address.Street}},<br/>
+    {{.Address.City}},{{.Address.State}}, {{.Address.ZipCode}} <br/>
+    🌎 <a href="https://maps.google.com/?q={{.Location.Latitude}},{{.Location.Longitude}}" target="_blank">google maps</a><br/>
+
+    {{ if .Website }}
+    🖥️ <a href="{{.Website}}" target="_blank">website</a><br/>
+    {{ end }}
+</address>
+
+{{ if .OperationHours }}
+🕒 Operation Hours: {{ .OperationHours }}<br/>
+{{ end }}
+
+{{ if .OperationSeason }}
+🍃 Operation Season: {{ .OperationSeason }}<br/>
+{{ end }}
+
+{{ if .SnapStatus }}
+✌️ Accepts <a href="https://www.fns.usda.gov/snap/supplemental-nutrition-assistance-program">SNAP</a><br/>
+{{ end }}
+
+{{ if .FarmersMarketNutritionProgram }}
+👩🏽‍🌾 Part of the <a href="https://www.fns.usda.gov/fmnp/wic-farmers-market-nutrition-program">Farmers' Market Nutrition Program</a><br/>
+{{ end }}
+
+{{ if .Description }}
+<pre><code>{{.Description}}</code></pre>
+{{ end }}
+
+{{end}}
+
+</div>
+
+</body>
+
+</html>

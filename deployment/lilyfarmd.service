@@ -1,0 +1,11 @@
+[Unit]
+Description=lilyfarmd
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /usr/bin/lilyfarmd.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

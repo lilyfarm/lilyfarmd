@@ -1,0 +1,145 @@
+<!-- collects a user's location and redirects the user to the nearest N farmers' markets page -->
+
+<html>
+
+{{.HtmlHead}}
+
+<body>
+
+<div class="container">
+
+    {{.HeadingAndMenu}}
+
+    <!-- Buy Me A Coffee Widget -->
+    <script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="lilyfarm" data-description="Support me on Buy me a coffee!" data-message="Support us! All proceeds go towards the healthcare of my grandfather who has dementia." data-color="#5F7FFF" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+
+
+    <div class="mb-3 mt-3">
+        <p class="text-center">
+            <small>Free and Open-Source Platform and API Endpoint for Farmers' Markets</small>
+        </p>
+    </div>
+
+    <div class="card mb-3 mt-3">
+        <div class="card-body">
+            <h5 class="card-title">Use your geolocation</h5>
+            <p class="card-text">Use your device's current location to get the nearest Farmers' Markets</p>
+
+            <button class="btn btn-primary col-auto" id="get-location-button">Get location</button>
+        </div>
+    </div>
+
+    <div class="card mb-3 mt-3">
+        <div class="card-body">
+            <h5 class="card-title">Alternatively, use your zip code</h5>
+            <p class="card-test">Use your 5 digit zip code to get the nearest Farmers' Markets</p>
+            <div id="zipcode-form">
+                <form onsubmit="return submitZipcode()">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label" for="zipcode">Zip Code</label>
+                        </div>
+                        <div class="col-auto">
+                            <input class="form-control" type="text" id="zipcode" name="zipcode" required>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3 mt-3">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label class="form-label" for="datasource">Select Data Source: </label>
+            </div>
+            <div class="col-auto">
+                <select class="form-select" id="datasource" aria-label="Choose backend data source">
+                    <option selected value="usda">United States Department of Agriculture (USDA)</option>
+                    <option value="newyork">New York State</option>
+                </select>
+            </div>
+        </div>
+        <br/>
+
+        <p>
+        <strong>Note:</strong> Live in New York? Select the New York State datasource instead of the default USDA datasource. 
+        It has more up-to-date and detailed information including SNAP and Farmers' Market Nutrition Program eligibility.
+        Support for more detailed local sources coming soon. 
+        </p>
+
+    </div>
+
+    <div id="location-status"></div>
+    <div id="relocating-status"></div>
+
+</div>
+
+<script>
+
+function getLocation() {
+    document.getElementById("relocating-status").innerHTML = "getting geolocation..."
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        document.getElementById("location-status").innerHTML = "Geolocation is not supported by this browser. 😔";
+    }
+
+}
+
+function showPosition(position) {
+    var latitude = position.coords.latitude;
+    var longitude = position.coords.longitude;
+
+    document.getElementById("location-status").innerHTML = "Location received. ✅"
+
+    var datasource = document.getElementById("datasource").value
+
+    var redirectURL = "/nearestNHtml?n=20&latitude=" + latitude + "&longitude=" + longitude + "&datasource=" + datasource;
+
+    document.getElementById("relocating-status").innerHTML = "Redirecting. ⌛ (Click <a href='" + redirectURL + "'>here</a> if not automatically redirected.)"
+
+    window.location.href = redirectURL;
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            document.getElementById("location-status").innerHTML = "User denied the request for Geolocation.";
+            break;
+        case error.POSITION_UNAVAILABLE:
+            document.getElementById("location-status").innerHTML = "Location information is unavailable.";
+            break;
+        case error.TIMEOUT:
+            document.getElementById("location-status").innerHTML = "The request to get user location timed out.";
+            break;
+        case error.UNKNOWN_ERROR:
+            document.getElementById("location-status").innerHTML = "An unknown error occurred.";
+            break;
+    }
+}
+
+function submitZipcode() {
+    var zipcode = document.getElementById("zipcode").value;
+    var datasource = document.getElementById("datasource").value
+
+    document.getElementById("location-status").innerHTML = "Zipcode submitted: " + zipcode;
+    var redirectURL = "/nearestNHtmlByZipCode?n=20&zipCode=" + zipcode + "&datasource=" + datasource;
+
+    document.getElementById("relocating-status").innerHTML =  "Redirecting. ⌛ (Click <a href='" + redirectURL + "'>here</a> if not automatically redirected.)"
+
+    window.location.href = redirectURL;
+
+    return false; // Prevent form from submitting
+}
+
+document.getElementById("get-location-button").onclick = getLocation
+
+</script>
+
+</body>
+</html>
